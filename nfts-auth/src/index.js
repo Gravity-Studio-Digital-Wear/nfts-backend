@@ -5,6 +5,7 @@ const crypto = require('crypto')
 const { verifyToken } = require('./jwt/jwt')
 const { init } = require('./db/mongoose')
 const { saveOrCreateEmptyUser, getUser, updateUserDetail } = require('./db/repository')
+const { getSignedPolicy } = require('./s3/s3form')
 
 const app = express();
 const web3 = new Web3()
@@ -56,6 +57,11 @@ app.post("/auth/login", async (req, res) => {
     }
 
     res.status(403).json()
+})
+
+app.get("/auth/upload", verifyToken, async (req, res) => {
+    const result = await getSignedPolicy(uuidv4())
+    res.status(200).json(result)
 })
 
 app.get("/auth/profile", verifyToken, async (req, res) => {
