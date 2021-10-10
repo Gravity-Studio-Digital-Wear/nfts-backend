@@ -3,17 +3,17 @@ if (!process.env.STRIPE_SK) {
     console.error("STRIPE_SK is required!")
     process.exit(0)
 }
-if (!process.env.STRIPE_WHSEC) {
-    console.error("STRIPE_WHSEC is required!")
-    process.exit(0)
-}
+//if (!process.env.STRIPE_WHSEC) {
+//    console.error("STRIPE_WHSEC is required!")
+//    process.exit(0)
+//}
 if (!process.env.REDIRECT_BASE_URL) {
     console.error("REDIRECT_BASE_URL is required!")
     process.exit(0)
 }
 
 const STRIPE_SK = process.env.STRIPE_SK
-const STRIPE_WHSEC = process.env.STRIPE_WHSEC
+//const STRIPE_WHSEC = process.env.STRIPE_WHSEC
 const REDIRECT_BASE_URL = process.env.REDIRECT_BASE_URL
 const SYNC_INTERVAL = 10000
 
@@ -94,7 +94,7 @@ const handleProductUpdatedInDb = async (product) => {
     }
 }
 
-const checkout = async (cart) => {
+const checkout = async (accountId, cart) => {
     const lines = []
     const cartFull = []
     for (let item of cart) {
@@ -131,7 +131,7 @@ const checkout = async (cart) => {
     });
 
     const paymentIntent = session.payment_intent
-    await createCheckout(paymentIntent, cartFull)
+    await createCheckout(accountId, paymentIntent, cartFull)
 
     return session.url
 }

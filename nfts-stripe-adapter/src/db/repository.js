@@ -36,11 +36,12 @@ const updateSuccessful = async() => {
     return result
 }
 
-const createCheckout = async(paymentIntent, cart) => {
+const createCheckout = async(accountId, paymentIntent, cart) => {
     const checkout = new Checkout({
         _id: paymentIntent,
         status: 'NEW',
         paymentIntent,
+        accountId,
         cart
     })
     const result = await checkout.save()
@@ -49,16 +50,16 @@ const createCheckout = async(paymentIntent, cart) => {
 }
 
 const transitCheckout = async(id, status) => {
-    const checkout = await Checkout.findById(id)
+    let checkout = await Checkout.findById(id)
     if (checkout != null) {
         checkout.updatedAt = new Date()
         checkout.status = status
-        await heckout.save()
+        checkout = await checkout.save()
     } else {
         throw new Error('Checkout not found')
     }
     console.log(`DB tramsitCheckout transited checkout ${id} to ${status}`)
-    return result
+    return checkout
 }
 
 module.exports = {

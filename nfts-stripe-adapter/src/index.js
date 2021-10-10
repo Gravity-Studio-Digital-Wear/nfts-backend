@@ -24,7 +24,8 @@ if (!process.env.TOKEN_KEY) {
 
 app.post('/checkout/session', verifyToken, async (req, res) => {
     const { cart } = req.body
-    const checkoutUrl = await checkout(cart)
+    const accountId = req.user.user_id
+    const checkoutUrl = await checkout(accountId, cart)
     res.redirect(303, checkoutUrl)
 });
 
