@@ -8,6 +8,8 @@ const productSchema = new mongoose.Schema({
     tokenTypeId: { type: String, required: true },
     images: { type: [String], required: true },
     active: { type: Boolean, default: true }
+}, {
+    timestamps: true
 });
 
 const Product = mongoose.model('Product', productSchema);

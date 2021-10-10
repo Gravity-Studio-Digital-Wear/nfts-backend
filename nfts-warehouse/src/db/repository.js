@@ -10,20 +10,22 @@ const createOrUpdateProduct = async(product) => {
     } else {
         Object.assign(result, product)
     }
-    await result.save()
+    result.updatedAt = new Date()
+    result = await result.save()
     console.log(`DB createOrUpdateProduct saved ${product.name}`)
     return result
 }
 
 const updateProduct = async(id, product) => {
-    const result = await getProduct(id)
+    let result = await getProduct(id)
     if (result) {
         Object.assign(result, product)
     } else {
         console.log(`DB product with id ${id} not found`)
         throw Error(`Product with id ${id} not found`)
     }
-    await result.save()
+    result.updatedAt = new Date()
+    result = await result.save()
     console.log(`DB updateProduct saved ${product.name}`)
     return result
 }
