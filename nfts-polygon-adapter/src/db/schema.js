@@ -34,12 +34,25 @@ const checkoutSchema = new mongoose.Schema({
     timestamps: true
 });
 
+const wearTicketSchema = new mongoose.Schema({
+    address: { type: String, required: true },
+    productId: { type: String, required: true },
+    status: { type: String, required: true },
+    sourceImageLinks: { type: [String]},
+    resultImageLinks: { type: [String]},
+    rejectComment: { type: String},
+}, {
+    timestamps: true
+});
+
 const Product = mongoose.model('Product', productSchema);
 const UpdateStatus = mongoose.model('UpdateStatus', updateStatusSchema);
 const Checkout = mongoose.model('Checkout', checkoutSchema);
+const WearTicket = mongoose.model('WearTicket', wearTicketSchema);
 
 module.exports = {
     Product,
     UpdateStatus,
-    Checkout
+    Checkout,
+    WearTicket
 }

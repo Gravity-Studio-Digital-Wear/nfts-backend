@@ -3,6 +3,11 @@ require('express-async-errors');
 const { verifyToken } = require('./jwt/jwt')
 const { init } = require('./db/mongoose')
 const { getAllProducts, getProduct, updateProduct, createOrUpdateProduct } = require('./db/repository')
+const { getTicket,
+    listTicketsByAddress,
+    wear,
+    provideResult,
+    provideRejection } = require('./db/ticketRepository')
 const { getStockSupply, getAddressSupply } = require('./alchemy/alchemy')
 
 const app = express();
@@ -23,6 +28,24 @@ if (!process.env.TOKEN_KEY) {
     process.exit(0)
 }
 
+const getAddressProducts = async (address) => {
+    const products = await getAllProducts()
+    const productRequest = products.map(p => ({
+        contractId: p.contractId,
+        tokenTypeId: p.tokenTypeId
+    }))
+    const supplies = await getAddressSupply(address, productRequest)
+    const result = []
+    for (let supply of supplies) {
+        const product = products.find(p => p.contractId === supply.contractId && p.tokenTypeId === supply.tokenId)
+        result.push({
+            product,
+            supply: supply.supply
+        })
+    }
+    return JSON.parse(JSON.stringify(result))
+}
+
 app.get("/warehouse/products", async (_, res) => {
     const result = await getAllProducts()
     res.status(200).json(result)
@@ -41,20 +64,7 @@ app.put("/warehouse/products/:id", verifyToken, async (req, res) => {
 
 app.get("/warehouse/products/my", verifyToken, async (req, res) => {
     const address = req.user.user_id
-    const products = await getAllProducts()
-    const productRequest = products.map(p => ({
-        contractId: p.contractId,
-        tokenTypeId: p.tokenTypeId
-    }))
-    const supplies = await getAddressSupply(address, productRequest)
-    const result = []
-    for (let supply of supplies) {
-        const product = products.find(p => p.contractId === supply.contractId && p.tokenTypeId === supply.tokenId)
-        result.push({
-            product,
-            supply: supply.supply
-        })
-    }
+    const result = await getAddressProducts(address)
     res.status(200).json(result)
 })
 
@@ -69,6 +79,64 @@ app.get("/warehouse/products/:id/supply", async (req, res) => {
     const result = await getProduct(id)
     const supply = await getStockSupply(result.contractId, result.tokenTypeId)
     res.status(200).json(supply)
+})
+
+app.get("/wardrobe", verifyToken, async (req, res) => {
+    const address = req.user.user_id
+    const tickets = await listTicketsByAddress(address)
+    const products = await getAddressProducts(address)
+    const result = []
+    for (let ticket of tickets) {
+        const product = products.find(p => p.product._id === ticket.productId)
+        if (product) {
+            result.push({
+                ticket,
+                items: product
+            })
+        }
+    }
+    res.status(200).json(result)
+})
+
+app.post("/wardrobe/:id/wear", verifyToken, async (req, res) => {
+    const id = req.params.id
+    const address = req.user.user_id
+
+    const {
+        sourceImageLinks
+    } = req.body
+
+    const ticket = await getTicket(id)
+    const products = await getAddressProducts(address)
+
+    if (!products.find(p => p.product._id === ticket.productId)) {
+        throw new Error(`Do not own a product with id ${ticket.productId}`)
+    }
+
+    const result = await wear(id, address, sourceImageLinks)
+    res.status(200).json(result)
+})
+
+app.post("/wardrobe/:id/reject", verifyToken, async (req, res) => {
+    const id = req.params.id
+
+    const {
+        rejectComment
+    } = req.body
+
+    const result = await provideRejection(id, rejectComment)
+    res.status(200).json(result)
+})
+
+app.post("/wardrobe/:id/result", verifyToken, async (req, res) => {
+    const id = req.params.id
+
+    const {
+        resultImageLinks
+    } = req.body
+
+    const result = await provideResult(id, resultImageLinks)
+    res.status(200).json(result)
 })
 
 app.use(jsonErrorHandler);

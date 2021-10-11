@@ -1,4 +1,17 @@
-const { Product, UpdateStatus, Checkout } = require('./schema')
+const { Product, UpdateStatus, Checkout, WearTicket } = require('./schema')
+
+const issueTickets = async (productId, address, quantity) => {
+    if (!productId || !address || !quantity) {
+        throw new Error('Invalid call to issueTickets')
+    }
+
+    for (let i = 0; i < quantity; i++) {
+        const ticket = new WearTicket({productId, address, status: 'NEW'})
+        await ticket.save()
+    }
+
+    console.log(`DB issueTickets issued ${quantity} tickets for products id ${productId} for ${address}`)
+}
 
 const getProduct = async(id) => {
     const products = await Product.find({"_id": id})
@@ -31,6 +44,7 @@ const processOrderInQueue = async(processor) => {
 }
 
 module.exports = {
+    issueTickets,
     getProduct,
     processOrderInQueue
 }

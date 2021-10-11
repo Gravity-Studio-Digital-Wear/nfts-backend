@@ -1,5 +1,4 @@
 const { Product } = require('./schema')
-const { mongoose } = require('./mongoose')
 
 const createOrUpdateProduct = async(product) => {
     const products = await Product.find({name: product.name})

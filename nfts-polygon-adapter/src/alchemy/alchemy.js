@@ -23,7 +23,7 @@ const ORDER_PROCESSING_TIMEOUT = 1000
 const Web3 = require('web3');
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const { init } = require('../db/mongoose')
-const { getProduct, processOrderInQueue } = require('../db/repository')
+const { getProduct, processOrderInQueue, issueTickets } = require('../db/repository')
 
 const provider = new Web3.providers.HttpProvider(PROVIDER_URL);
 const localKeyProvider = new HDWalletProvider({
@@ -61,6 +61,9 @@ const fillfillOrder = async (order) => {
                 fulfillmentError: 'INSF_TOKEN_BALANCE'
             }
         }
+
+        console.log(`WEB3 fillfillOrder issue ${item.quantity} tickets for product ${item.productId}`)
+        await issueTickets(item.productId, recipient, item.quantity)
         console.log(`WEB3 fillfillOrder prepare transaction for order line ${orderId} token ${tokenTypeId} qty ${item.quantity}`)
         const receipt = await contract.methods.safeTransferFrom(
             STOCKS_ACCOUNT, // from
