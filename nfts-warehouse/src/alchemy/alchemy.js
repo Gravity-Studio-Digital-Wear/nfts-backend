@@ -30,6 +30,48 @@ const getStockSupply = async (contractId, tokenId) => {
         maxSupply
     }
 }
+
+const getAddressSupply = async (address, tokens) => {
+    if (!address || !tokens || !tokens.length) {
+        throw new Error('Invalid getAddressSupply parameters')
+    }
+
+    console.log(`WEB3 getAddressSupply for address=${address} tokens=${tokens.length}`)
+
+    const contractToTokenMap = {}
+    tokens.forEach(token => {
+        if (token.contractId.startsWith("0x")) {
+            if (!contractToTokenMap[token.contractId]) {
+                contractToTokenMap[token.contractId] = []
+            }
+            if (!contractToTokenMap[token.contractId].includes(token.tokenTypeId)) {
+                contractToTokenMap[token.contractId].push(token.tokenTypeId)
+            }
+        }
+    })
+    console.log(JSON.stringify(contractToTokenMap))
+    const response = []
+    for (let contractId of Object.keys(contractToTokenMap)) {
+        const contract = new web3.eth.Contract(ABI, contractId)
+        const tokenIds = contractToTokenMap[contractId]
+        const accounts = Array(tokenIds.length).fill(address)
+        const supplyRs = await contract.methods.balanceOfBatch(accounts, tokenIds).call();
+        const supplies = JSON.parse(JSON.stringify(supplyRs))
+        for (let i = 0; i < supplies.length; i++) {
+            const supply = Number.parseInt(supplies[i])
+            if (supply > 0) {
+                response.push({
+                    contractId,
+                    tokenId: tokenIds[i],
+                    supply
+                })
+            }
+        }
+    }
+    return response
+}
+
 module.exports = {
-    getStockSupply
+    getStockSupply,
+    getAddressSupply
 }

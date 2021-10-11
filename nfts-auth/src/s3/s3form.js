@@ -18,12 +18,17 @@ if (!process.env.AWS_BUCKET) {
     console.error(`Define AWS_BUCKET`)
     process.exit(0)
 }
+if (!process.env.AWS_ACTION) {
+    console.error(`Define AWS_ACTION`)
+    process.exit(0)
+}
 
 const AWS_PARMETERS = {
     access: process.env["AWS_ACCESS_KEY"],
     secret: process.env["AWS_SECRET_KEY"],
     region: process.env["AWS_REGION"],
-    bucket: process.env["AWS_BUCKET"]
+    bucket: process.env["AWS_BUCKET"],
+    action: process.env["AWS_ACTION"]
 }
 
 const getSignedPolicy = (filename) => {
@@ -34,7 +39,9 @@ const getSignedPolicy = (filename) => {
         bucket: AWS_PARMETERS.bucket,
         acl: "public-read"
     })
-    return formGen.create(filename)
+    const result = formGen.create(filename)
+    result.action = action
+    return result
 }
 
 module.exports = {
