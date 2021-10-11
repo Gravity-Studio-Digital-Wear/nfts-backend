@@ -1,5 +1,5 @@
 const express = require("express");
-const Web3 = require('Web3')
+const Web3 = require('web3')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const { verifyToken } = require('./jwt/jwt')

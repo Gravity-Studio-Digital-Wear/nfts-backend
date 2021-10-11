@@ -1,0 +1,60 @@
+version: "3.9"
+services:
+  nginx:
+    networks:
+      nfts:
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "5800:80"
+    volumes:
+      - "./nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
+  nfts-auth:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-auth:latest
+    container_name: nfts-auth
+    restart: always
+    env_file:
+     - ./env/mongo.env
+     - ./env/aws.env
+     - ./env/auth.env
+    ports:
+      - "13001:3001"
+  nfts-stripe-adapter:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-stripe-adapter:latest
+    container_name: nfts-stripe-adapter
+    restart: always
+    env_file:
+     - ./env/mongo.env
+     - ./env/stripe.env
+     - ./env/auth.env
+    ports:
+      - "13003:3003"
+  nfts-warehouse:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-warehouse:latest
+    container_name: nfts-warehouse
+    restart: always
+    env_file:
+     - ./env/mongo.env
+     - ./env/polygon.env
+     - ./env/auth.env
+    ports:
+      - "13002:3002"
+  nfts-polygon-adapter:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-polygon-adapter:latest
+    container_name: nfts-polygon-adapter
+    restart: always
+    env_file:
+     - ./env/mongo.env
+     - ./env/polygon.env
+     - ./env/polygon_secret.env
+networks:
+  nfts:
