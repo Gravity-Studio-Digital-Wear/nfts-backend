@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-const verifyToken = (req, res, next) => {
+const verifyToken = (roles) => (req, res, next) => {
     var token =
       req.body["access_token"] || req.query["access_token"] || req.headers["authorization"];
   
@@ -22,6 +22,16 @@ const verifyToken = (req, res, next) => {
           "error": "Forbidden",
           "error_detal": "Invalid token"
       });
+    }
+
+    if (roles && roles.length) {
+      const hasRole = req.user.roles.some(r => roles.includes(r))
+      if (!hasRole) {
+        return res.status(403).send({
+          "error": "Unauthorized",
+          "error_detal": "Access denied"
+      });
+      }
     }
     return next();
   };

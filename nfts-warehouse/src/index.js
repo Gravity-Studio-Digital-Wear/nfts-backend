@@ -51,18 +51,18 @@ app.get("/warehouse/products", async (_, res) => {
     res.status(200).json(result)
 })
 
-app.post("/warehouse/products", verifyToken, async (req, res) => {
+app.post("/warehouse/products", verifyToken('ADMIN'), async (req, res) => {
     const result = await createOrUpdateProduct(req.body)
     res.status(200).json(result)
 })
 
-app.put("/warehouse/products/:id", verifyToken, async (req, res) => {
+app.put("/warehouse/products/:id", verifyToken('ADMIN'), async (req, res) => {
     const id = req.params.id
     const result = await updateProduct(id, req.body)
     res.status(200).json(result)
 })
 
-app.get("/warehouse/products/my", verifyToken, async (req, res) => {
+app.get("/warehouse/products/my", verifyToken(), async (req, res) => {
     const address = req.user.user_id
     const result = await getAddressProducts(address)
     res.status(200).json(result)
@@ -81,7 +81,7 @@ app.get("/warehouse/products/:id/supply", async (req, res) => {
     res.status(200).json(supply)
 })
 
-app.get("/wardrobe", verifyToken, async (req, res) => {
+app.get("/wardrobe", verifyToken(), async (req, res) => {
     const address = req.user.user_id
     const tickets = await listTicketsByAddress(address)
     const products = await getAddressProducts(address)
@@ -98,7 +98,7 @@ app.get("/wardrobe", verifyToken, async (req, res) => {
     res.status(200).json(result)
 })
 
-app.post("/wardrobe/:id/wear", verifyToken, async (req, res) => {
+app.post("/wardrobe/:id/wear", verifyToken(), async (req, res) => {
     const id = req.params.id
     const address = req.user.user_id
 
@@ -117,7 +117,7 @@ app.post("/wardrobe/:id/wear", verifyToken, async (req, res) => {
     res.status(200).json(result)
 })
 
-app.post("/wardrobe/:id/reject", verifyToken, async (req, res) => {
+app.post("/wardrobe/:id/reject", verifyToken('ADMIN'), async (req, res) => {
     const id = req.params.id
 
     const {
@@ -128,7 +128,7 @@ app.post("/wardrobe/:id/reject", verifyToken, async (req, res) => {
     res.status(200).json(result)
 })
 
-app.post("/wardrobe/:id/result", verifyToken, async (req, res) => {
+app.post("/wardrobe/:id/result", verifyToken('ADMIN'), async (req, res) => {
     const id = req.params.id
 
     const {
