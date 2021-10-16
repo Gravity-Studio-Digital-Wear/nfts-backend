@@ -24,3 +24,10 @@ Blockchain:
 
 STOCKS_ACCOUNT - Account from which to sell NFTs
 WEB3_PROVIDER_URL - Web3 provider address
+
+### Optimizing Images
+ https://res.cloudinary.com/easychain-img/video/upload/w_562/q_auto:good/vc_auto/gravity/001-Venusian-Gown/botticelli_dress_turntable_hhzodw.webm
+
+https://res.cloudinary.com/easychain-img/image/upload/w_562/gravity/001-Venusian-Gown/botticelli_dress_side_guvjqi.png
+
+

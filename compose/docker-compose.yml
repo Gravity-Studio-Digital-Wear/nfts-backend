@@ -10,6 +10,14 @@ services:
       - "5800:80"
     volumes:
       - "./nginx/nginx.conf:/etc/nginx/conf.d/default.conf"
+  ui:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/gravity-ui
+    container_name: gravity-ui
+    restart: always
+    expose:
+      - "8888"
   nfts-auth:
     networks:
       nfts:
@@ -20,8 +28,8 @@ services:
      - ./env/mongo.env
      - ./env/aws.env
      - ./env/auth.env
-    ports:
-      - "13001:3001"
+    expose:
+      - "3001"
   nfts-stripe-adapter:
     networks:
       nfts:
@@ -32,8 +40,8 @@ services:
      - ./env/mongo.env
      - ./env/stripe.env
      - ./env/auth.env
-    ports:
-      - "13003:3003"
+    expose:
+      - "3003"
   nfts-warehouse:
     networks:
       nfts:
@@ -44,8 +52,8 @@ services:
      - ./env/mongo.env
      - ./env/polygon.env
      - ./env/auth.env
-    ports:
-      - "13002:3002"
+    expose:
+      - "3002"
   nfts-polygon-adapter:
     networks:
       nfts:
