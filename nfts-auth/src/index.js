@@ -36,11 +36,14 @@ app.post("/auth/login", async (req, res) => {
         const recovered = web3.eth.accounts.recover(challenge, signature)
         if (recovered === address) {
 
-            saveOrCreateEmptyUser(address)
+            await saveOrCreateEmptyUser(address)
+            const result = await getUser(address)
 
             const token = jwt.sign({
                 user_id: address,
-                address
+                address,
+                roles: result.roles
+
             },
                 process.env.TOKEN_KEY,
                 {
