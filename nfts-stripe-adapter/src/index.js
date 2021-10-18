@@ -26,7 +26,10 @@ app.post('/checkout/session', verifyToken, async (req, res) => {
     const { cart } = req.body
     const accountId = req.user.user_id
     const checkoutUrl = await checkout(accountId, cart)
-    res.redirect(303, checkoutUrl)
+    res.status(201).json({
+        success: true,
+        checkoutUrl
+    })
 });
 
 app.post('/checkout/hooks', async (req, res) => {
