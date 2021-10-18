@@ -72,7 +72,10 @@ services:
     container_name: nfts-notify
     restart: always
     env_file:
+     - ./env/auth.env
      - ./env/mongo.env
      - ./env/telegram.env
+    expose:
+      - "3005"
 networks:
   nfts:
