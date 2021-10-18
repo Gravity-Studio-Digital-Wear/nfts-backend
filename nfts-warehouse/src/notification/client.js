@@ -15,21 +15,20 @@ const fireNotification = (code, params) => {
     }
 
     fetch(url, {
-        method: 'POST',
-        Headers: {
+        headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         },
+        method: 'POST',
         body: JSON.stringify(payload)
-    }).then(res => {
-        const json = res.json()
+    }).then(res => res.json()).then(json => {
         if (json.success) {
-            console.log(`Success sending notification ${code}`)
+            console.log(`[Notify-Client] Success sending notification ${code}`)
         } else {
-            console.error(`Error sending notification ${code}, reason: ${json.reason}`)
+            console.error(`[Notify-Client] Error sending notification ${code}, reason: ${json.reason}`)
         }
     }).catch(err => {
-        console.error(`System rrror sending notification ${code}, reason: ${err}`)
+        console.error(`[Notify-Client] System rrror sending notification ${code}, reason: ${err}`)
     })
 }
 
