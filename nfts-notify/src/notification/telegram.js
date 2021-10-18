@@ -20,8 +20,10 @@ const createMessageAndSend = async(template, parameters) => {
     const compiled = Handlebars.compile(template)
     const result = compiled(parameters)
     const url = sendUrl(TG_BOT_TOKEN, TG_BOT_CHAT, result)
-    const result2 = await fetch(url)
-    console.log(result2)
+    const sendResult = await fetch(url)
+    if (sendResult.status !== 200) {
+        console.error(sendResult)
+    }
 }
 
 module.exports = {

@@ -26,6 +26,9 @@ if (!process.env.TOKEN_KEY) {
 app.post('/notification/push/send', async (req, res) => {
     const { templateId, parameters } = req.body
     const template = await getTemplate(templateId)
+    if (!template) {
+        throw new Error(`Template not found ${templateId}`)
+    }
     const templateMessage = template.messageTemplate
     
     try {
