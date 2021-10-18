@@ -52,6 +52,7 @@ services:
      - ./env/mongo.env
      - ./env/polygon.env
      - ./env/auth.env
+     - ./env/notify.env
     expose:
       - "3002"
   nfts-polygon-adapter:
@@ -64,5 +65,14 @@ services:
      - ./env/mongo.env
      - ./env/polygon.env
      - ./env/polygon_secret.env
+  nfts-notify:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-notify:latest
+    container_name: nfts-notify
+    restart: always
+    env_file:
+     - ./env/mongo.env
+     - ./env/telegram.env
 networks:
   nfts:
