@@ -9,6 +9,7 @@ const { getTicket,
     provideResult,
     provideRejection } = require('./db/ticketRepository')
 const { getStockSupply, getAddressSupply } = require('./alchemy/alchemy')
+const { fireNotification } = require('./notification/client')
 
 const app = express();
 
@@ -108,12 +109,16 @@ app.post("/wardrobe/:id/wear", verifyToken(), async (req, res) => {
 
     const ticket = await getTicket(id)
     const products = await getAddressProducts(address)
-
-    if (!products.find(p => p.product._id === ticket.productId)) {
+    const product = products.find(p => p.product._id === ticket.productId)
+    if (!product) {
         throw new Error(`Do not own a product with id ${ticket.productId}`)
     }
 
     const result = await wear(id, address, sourceImageLinks)
+    fireNotification('NEW_WEAR_REQUEST', {
+        user_id: address,
+        item_name: p.product.name
+    })
     res.status(200).json(result)
 })
 
