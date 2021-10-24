@@ -34,7 +34,7 @@ app.post("/auth/login", async (req, res) => {
     try {
         const challenge = challenges[address]
         const recovered = web3.eth.accounts.recover(challenge, signature)
-        if (recovered === address) {
+        if (recovered.toLowerCase() === address.toLowerCase()) {
 
             await saveOrCreateEmptyUser(address)
             const result = await getUser(address)
