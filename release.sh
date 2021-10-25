@@ -15,3 +15,4 @@ else
   echo "Could not build docker" >&2
 fi
 git checkout dev
+git push origin dev main release/$RELEASE_VERSION
