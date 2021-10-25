@@ -11,7 +11,7 @@ declare -a modules=(
 
 function build_docker() {
     cd ${1}
-    sh build-docker.sh
+    sh publish-docker-prom.sh
     cd ..
 }
 
