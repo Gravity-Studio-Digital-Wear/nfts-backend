@@ -21,16 +21,13 @@ const STOCKS_ACCOUNT_PRIVATE_KEY = process.env["STOCKS_ACCOUNT_PRIVATE_KEY"];
 const ORDER_PROCESSING_TIMEOUT = 1000
 
 const Web3 = require('web3');
-const HDWalletProvider = require("@truffle/hdwallet-provider");
 const { init } = require('../db/mongoose')
 const { getProduct, processOrderInQueue, issueTickets } = require('../db/repository')
 
 const provider = new Web3.providers.HttpProvider(PROVIDER_URL);
-const localKeyProvider = new HDWalletProvider({
-    privateKeys: [STOCKS_ACCOUNT_PRIVATE_KEY],
-    providerOrUrl: provider,
-  });
-const web3 = new Web3(localKeyProvider);
+const web3 = new Web3(provider);
+
+web3.eth.accounts.wallet.add(STOCKS_ACCOUNT_PRIVATE_KEY)
 
 const fillfillOrder = async (order) => {
     const result = []
@@ -65,13 +62,18 @@ const fillfillOrder = async (order) => {
         console.log(`WEB3 fillfillOrder issue ${item.quantity} tickets for product ${item.productId}`)
         await issueTickets(item.productId, recipient, item.quantity)
         console.log(`WEB3 fillfillOrder prepare transaction for order line ${orderId} token ${tokenTypeId} qty ${item.quantity}`)
+        const gasPrice = await web3.eth.getGasPrice()
         const receipt = await contract.methods.safeTransferFrom(
             STOCKS_ACCOUNT, // from
             recipient,      // to
             tokenTypeId,    // token id
             item.quantity,  // amount of tokens,
             "0x0"           // empty calldate bytes
-        ).send({from: STOCKS_ACCOUNT});
+        ).send({
+            from: STOCKS_ACCOUNT,
+            gas: "210000",
+            gasPrice
+        });
 
         const hash = receipt.transactionHash ? receipt.transactionHash : receipt
         console.log(`WEB3 fillfillOrder sent transaction id ${hash} for order line ${orderId}`)
