@@ -19,6 +19,12 @@ const SYNC_INTERVAL = 10000
 
 const stripe = require('stripe')(STRIPE_SK);
 
+const isImage = (img) =>
+    img.endsWith('.jpg')
+    || img.endsWith('.jpeg')
+    || img.endsWith('.png')
+    || img.endsWith('.gif')
+
 const syncAllProducts = async () => {
     console.log(`syncAllProducts triggered...`)
     const toSync = await listProductsForSync()
@@ -42,7 +48,7 @@ const handleProductUpdatedInDb = async (product) => {
                 contractId: product.contractId,
                 tokenTypeId: product.tokenTypeId
             },
-            images: product.images
+            images: product.images.filter(i => isImage(i))
         });
         console.log(`Stripe handleProductUpdatedInDb created stripe product for id ${product._id}`)
         productId = res.id
@@ -55,7 +61,7 @@ const handleProductUpdatedInDb = async (product) => {
                 contractId: product.contractId,
                 tokenTypeId: product.tokenTypeId
             },
-            images: product.images
+            images: product.images.filter(i => isImage(i))
         });
         productId = res.id
         console.log(`Stripe handleProductUpdatedInDb updated stripe product for id ${product._id}`)
