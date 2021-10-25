@@ -117,7 +117,7 @@ app.post("/wardrobe/:id/wear", verifyToken(), async (req, res) => {
     const result = await wear(id, address, sourceImageLinks)
     fireNotification('NEW_WEAR_REQUEST', {
         user_id: address,
-        item_name: p.product.name
+        item_name: product.product.name
     })
     res.status(200).json(result)
 })
