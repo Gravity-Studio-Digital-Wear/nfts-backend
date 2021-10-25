@@ -8,10 +8,10 @@ then
   git push origin v$RELEASE_VERSION
   git push -u origin release/$RELEASE_VERSION
   sh publish-docker-prom.sh
-  git checkout master
+  git checkout main
   git merge release/$RELEASE_VERSION
   git checkout release/$RELEASE_VERSION
 else
   echo "Could not build docker" >&2
 fi
-git checkout develop
+git checkout dev
