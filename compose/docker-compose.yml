@@ -13,7 +13,7 @@ services:
   ui:
     networks:
       nfts:
-    image: rg.fr-par.scw.cloud/easychain/nfts/gravity-ui
+    image: rg.fr-par.scw.cloud/easychain/nfts/gravity-ui:${TAG}
     container_name: gravity-ui
     restart: always
     expose:
@@ -21,7 +21,7 @@ services:
   nfts-auth:
     networks:
       nfts:
-    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-auth:latest
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-auth:${TAG}
     container_name: nfts-auth
     restart: always
     env_file:
@@ -33,7 +33,7 @@ services:
   nfts-stripe-adapter:
     networks:
       nfts:
-    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-stripe-adapter:latest
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-stripe-adapter:#{TAG}
     container_name: nfts-stripe-adapter
     restart: always
     env_file:
@@ -45,7 +45,7 @@ services:
   nfts-warehouse:
     networks:
       nfts:
-    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-warehouse:latest
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-warehouse:${TAG}
     container_name: nfts-warehouse
     restart: always
     env_file:
@@ -58,7 +58,7 @@ services:
   nfts-polygon-adapter:
     networks:
       nfts:
-    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-polygon-adapter:latest
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-polygon-adapter:${TAG}
     container_name: nfts-polygon-adapter
     restart: always
     env_file:
@@ -68,7 +68,7 @@ services:
   nfts-notify:
     networks:
       nfts:
-    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-notify:latest
+    image: rg.fr-par.scw.cloud/easychain/nfts/nfts-notify:${TAG}
     container_name: nfts-notify
     restart: always
     env_file:
