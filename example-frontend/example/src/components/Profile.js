@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router";
-import { magic, web3 } from "../magic";
+import { magic, web3, provider } from "../magic";
 import Loading from "./Loading";
+import { OrderSide } from 'opensea-js/lib/types'
+import { OpenSeaPort, Network } from 'opensea-js'
+
+const seaport = new OpenSeaPort(provider, {
+  networkName: Network.Main
+})
 
 export default function Profile() {
   const [userMetadata, setUserMetadata] = useState();
@@ -38,7 +44,7 @@ export default function Profile() {
   });
 
   const signServerToken = useCallback(async () => {
-    const signed = await web3.eth.sign('92db9467-2a8a-f5e3-513a-3f6044614c0c', userMetadata.publicAddress)
+    const signed = await web3.eth.sign('0b3a1331-bdc2-a536-2100-992910d9de2c', userMetadata.publicAddress)
     setSignedData(signed)
   });
 
