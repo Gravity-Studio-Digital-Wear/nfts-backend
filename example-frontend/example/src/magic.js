@@ -5,8 +5,8 @@ import Web3 from 'web3';
 export const socialLogins = ["facebook", "google"];
 
 const customNodeOptions = { // Test network
-  rpcUrl: 'https://rpc-mumbai.matic.today',
-  chainId: 80001,
+  rpcUrl: 'https://rpc-cometh-mainnet.maticvigil.com/v1/0937c004ab133135c86586b55ca212a6c9ecd224',
+  chainId: 137,
 };
 
 export const magic = new Magic("pk_live_2F5A5F02878460F4", {
