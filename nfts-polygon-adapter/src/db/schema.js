@@ -46,14 +46,43 @@ const wearTicketSchema = new mongoose.Schema({
     timestamps: true
 });
 
+const blockNumberSchema = new mongoose.Schema({
+    _id: {type: String},
+    lastBlock: { type: Number, required: true }
+}, {
+    timestamps: true
+});
+
+const logSchema = new mongoose.Schema({
+    _id: {type: String},
+    type: { type: String, required: true },
+    contractId: { type: String, required: true },
+    tokenTypeId: { type: String, required: true },
+    recipient: { type: String, required: true },
+    sender: { type: String, required: true },
+    sender: { type: String, required: true },
+    blockNumber: {type: Number, required: true},
+    transactionHash: {type: String, required: true},
+    amount: {type: Number, required: true},
+    status: {type: String, required: true},
+    fulfillment: {type: [String]},
+    fulfillmentError: {type: String},
+}, {
+    timestamps: true
+});
+
 const Product = mongoose.model('Product', productSchema);
 const UpdateStatus = mongoose.model('UpdateStatus', updateStatusSchema);
 const Checkout = mongoose.model('Checkout', checkoutSchema);
 const WearTicket = mongoose.model('WearTicket', wearTicketSchema);
+const BlockNumber = mongoose.model('BlockNumber', blockNumberSchema);
+const Log = mongoose.model('Log', logSchema);
 
 module.exports = {
     Product,
     UpdateStatus,
     Checkout,
-    WearTicket
+    WearTicket,
+    BlockNumber,
+    Log
 }

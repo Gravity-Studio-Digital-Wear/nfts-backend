@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
+let initialized = false
+
 const init = async() => {
+    if (initialized) {
+        return
+    }
+    initialized = true
     if (!process.env.MONGO_USER) {
         console.error(`Define MONGO_USER`)
         process.exit(0)

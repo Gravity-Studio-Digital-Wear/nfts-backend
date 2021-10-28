@@ -22,7 +22,7 @@ const ORDER_PROCESSING_TIMEOUT = 1000
 
 const Web3 = require('web3');
 const { init } = require('../db/mongoose')
-const { getProduct, processOrderInQueue, issueTickets } = require('../db/repository')
+const { getProduct, processOrderInQueue } = require('../db/repository')
 
 const provider = new Web3.providers.HttpProvider(PROVIDER_URL);
 const web3 = new Web3(provider);
@@ -59,8 +59,7 @@ const fillfillOrder = async (order) => {
             }
         }
 
-        console.log(`WEB3 fillfillOrder issue ${item.quantity} tickets for product ${item.productId}`)
-        await issueTickets(item.productId, recipient, item.quantity)
+        
         console.log(`WEB3 fillfillOrder prepare transaction for order line ${orderId} token ${tokenTypeId} qty ${item.quantity}`)
         const gasPrice = await web3.eth.getGasPrice()
         const receipt = await contract.methods.safeTransferFrom(
@@ -74,7 +73,6 @@ const fillfillOrder = async (order) => {
             gas: "210000",
             gasPrice
         });
-
         const hash = receipt.transactionHash ? receipt.transactionHash : receipt
         console.log(`WEB3 fillfillOrder sent transaction id ${hash} for order line ${orderId}`)
         result.push(hash)

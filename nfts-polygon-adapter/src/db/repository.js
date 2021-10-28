@@ -5,12 +5,15 @@ const issueTickets = async (productId, address, quantity) => {
         throw new Error('Invalid call to issueTickets')
     }
 
+    const tickets = []
     for (let i = 0; i < quantity; i++) {
-        const ticket = new WearTicket({productId, address, status: 'NEW'})
-        await ticket.save()
+        let ticket = new WearTicket({productId, address, status: 'NEW'})
+        ticket = await ticket.save()
+        tickets.push(ticket)
     }
 
     console.log(`DB issueTickets issued ${quantity} tickets for products id ${productId} for ${address}`)
+    return tickets
 }
 
 const getProduct = async(id) => {
@@ -18,6 +21,19 @@ const getProduct = async(id) => {
     let result = products.length > 0 ? products[0] : undefined
     console.log(`DB getProduct found ${products.length} products for id ${id}`)
     return result
+}
+
+const getProductByContractIdAndTokenTypeId = async(contractId, tokenTypeId) => {
+    const products = await Product.find({'contractId': new RegExp(`^${contractId}$`, 'i'), tokenTypeId})
+    let result = products.length > 0 ? products[0] : undefined
+    console.log(`DB getProductByContractIdAndTokenTypeId found ${products.length} products for contractId ${contractId} tokenTypeId ${tokenTypeId}`)
+    return result
+}
+
+const getProducts = async() => {
+    let products = await Product.find({})
+    console.log(`DB getProducts found ${products.length} products`)
+    return products
 }
 
 const processOrderInQueue = async(processor) => {
@@ -46,5 +62,7 @@ const processOrderInQueue = async(processor) => {
 module.exports = {
     issueTickets,
     getProduct,
-    processOrderInQueue
+    getProducts,
+    processOrderInQueue,
+    getProductByContractIdAndTokenTypeId
 }
