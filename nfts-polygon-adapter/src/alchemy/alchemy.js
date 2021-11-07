@@ -61,7 +61,7 @@ const fillfillOrder = async (order) => {
     }
 }
 
-const fullfillBuyOrder = async (product, item, result, orderId, recipient) => {
+const fullfillBuyOrder = async (product, item, result, recipient) => {
     const contractId = product.contractId
     const tokenTypeId = product.tokenTypeId
     const contract = new web3.eth.Contract(ABI, contractId)
@@ -95,7 +95,7 @@ const fullfillBuyOrder = async (product, item, result, orderId, recipient) => {
 }
 
 const fullfillRentOrder = async (product, item, result, recipient) => {
-    console.log(`WEB3 fillfillOrder issue ${item.quantity} rent tickets for product ${product._id}`)
+    console.log(`WEB3 fillfillOrder issue ${item.quantity} 'rent tickets' for product ${product._id}`)
     const tickets = await issueTickets(product._id, recipient, item.quantity, 'rent')
     tickets.map(t => t._id).forEach(id => {
         result.push(id)
