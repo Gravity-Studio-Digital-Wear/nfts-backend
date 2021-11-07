@@ -1,7 +1,8 @@
 const { WearTicket } = require('./schema')
 
 const listTicketsByAddress = async(address) => {
-    const result = await WearTicket.find({address})
+    const result = await WearTicket.find({'address': new RegExp(`^${address}$`, 'i')})
+    console.log(`DB listTicketsByAddress got ${result.length} tickets`)
     return result
 }
 
