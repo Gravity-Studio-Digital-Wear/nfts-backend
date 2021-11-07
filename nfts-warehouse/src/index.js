@@ -86,14 +86,25 @@ app.get("/wardrobe", verifyToken(), async (req, res) => {
     const address = req.user.user_id
     const tickets = await listTicketsByAddress(address)
     const products = await getAddressProducts(address)
+    const allProducts = await getAllProducts()
     const result = []
     for (let ticket of tickets) {
-        const product = products.find(p => p.product._id === ticket.productId)
-        if (product || ticket.type === 'rent') {
-            result.push({
-                ticket,
-                items: product
-            })
+        if (ticket.type === 'rent') {
+            const product = allProducts.find(p => p._id === ticket.productId)
+            if (product) {
+                result.push({
+                    ticket,
+                    items: product
+                })
+            }
+        } else {
+            const product = products.find(p => p.product._id === ticket.productId)
+            if (product) {
+                result.push({
+                    ticket,
+                    items: product
+                })
+            }
         }
     }
     res.status(200).json(result)
@@ -146,6 +157,11 @@ app.post("/wardrobe/:id/result", verifyToken('ADMIN'), async (req, res) => {
 
 app.use(jsonErrorHandler);
 
-init()
+const runStart = async() => {
+    await init();
+}
+
+runStart()
+
 console.log(`Application is runnig on 3002`)
 app.listen(3002)
