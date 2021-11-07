@@ -1,13 +1,13 @@
-const { Product, UpdateStatus, Checkout, WearTicket } = require('./schema')
+const { Product, Checkout, WearTicket } = require('./schema')
 
-const issueTickets = async (productId, address, quantity) => {
+const issueTickets = async (productId, address, quantity, type = 'buy') => {
     if (!productId || !address || !quantity) {
         throw new Error('Invalid call to issueTickets')
     }
 
     const tickets = []
     for (let i = 0; i < quantity; i++) {
-        let ticket = new WearTicket({productId, address, status: 'NEW'})
+        let ticket = new WearTicket({productId, address, status: 'NEW', type})
         ticket = await ticket.save()
         tickets.push(ticket)
     }
@@ -20,6 +20,13 @@ const getProduct = async(id) => {
     const products = await Product.find({"_id": id})
     let result = products.length > 0 ? products[0] : undefined
     console.log(`DB getProduct found ${products.length} products for id ${id}`)
+    return result
+}
+
+const getRentProduct = async(id) => {
+    const products = await Product.find({})
+    const result = products.find(p => p.rentProductId === id)
+    console.log(`DB getRentProduct found ${result ? 1 : 0} rent products for id ${id}`)
     return result
 }
 
@@ -62,6 +69,7 @@ const processOrderInQueue = async(processor) => {
 module.exports = {
     issueTickets,
     getProduct,
+    getRentProduct,
     getProducts,
     processOrderInQueue,
     getProductByContractIdAndTokenTypeId

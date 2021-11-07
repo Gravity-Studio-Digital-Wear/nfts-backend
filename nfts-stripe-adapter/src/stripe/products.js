@@ -30,6 +30,13 @@ const syncAllProducts = async () => {
     const toSync = await listProductsForSync()
     for (p of toSync) {
         await handleProductUpdatedInDb(p)
+        if (p.rentPriceUSD) {
+            const rent = JSON.parse(JSON.stringify(p))
+            rent._id = rent.rentProductId
+            rent.priceUSD = rent.rentPriceUSD
+            delete rent.rentPriceUSD
+            await handleProductUpdatedInDb(rent)
+        }
     }
     await updateSuccessful()
 
@@ -40,7 +47,7 @@ const handleProductUpdatedInDb = async (product) => {
     let productId = ''
     try {
         const res = await stripe.products.create({
-            id: product.id,
+            id: product._id,
             name: product.name,
             active: product.active,
             description: product.description,
@@ -53,7 +60,7 @@ const handleProductUpdatedInDb = async (product) => {
         console.log(`Stripe handleProductUpdatedInDb created stripe product for id ${product._id}`)
         productId = res.id
     } catch (e) {
-        const res = await stripe.products.update(product.id, {
+        const res = await stripe.products.update(product._id, {
             name: product.name,
             active: product.active,
             description: product.description,

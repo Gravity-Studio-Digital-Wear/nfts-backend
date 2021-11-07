@@ -89,7 +89,7 @@ app.get("/wardrobe", verifyToken(), async (req, res) => {
     const result = []
     for (let ticket of tickets) {
         const product = products.find(p => p.product._id === ticket.productId)
-        if (product) {
+        if (product || ticket.type === 'rent') {
             result.push({
                 ticket,
                 items: product
