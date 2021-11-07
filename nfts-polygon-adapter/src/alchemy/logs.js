@@ -23,7 +23,7 @@ const doProcessLog = async (log) => {
             const productId = product._id
             const quantity = log.amount
             console.log(`LOGS doProcessLog issue ${quantity} tickets for product ${productId}`)
-            const tickets = await issueTickets(productId, log.recipient, quantity)
+            const tickets = await issueTickets(productId, log.recipient, quantity, 'buy')
             
             return {
                 success: true,

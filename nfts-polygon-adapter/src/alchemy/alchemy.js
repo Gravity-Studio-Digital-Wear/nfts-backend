@@ -51,7 +51,7 @@ const fillfillOrder = async (order) => {
         }
         const rentProduct = await getRentProduct(item.productId)
         if (rentProduct) {
-            await fullfillRentOrder(rentProduct, item, result, orderId, recipient)
+            await fullfillRentOrder(rentProduct, item, result, recipient)
         }
     }
     
@@ -61,7 +61,7 @@ const fillfillOrder = async (order) => {
     }
 }
 
-const fullfillBuyOrder = async (product, item, result, recipient) => {
+const fullfillBuyOrder = async (product, item, result, orderId, recipient) => {
     const contractId = product.contractId
     const tokenTypeId = product.tokenTypeId
     const contract = new web3.eth.Contract(ABI, contractId)
