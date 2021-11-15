@@ -2,7 +2,7 @@ const { WearTicket } = require('./schema')
 
 const listTicketsByAddress = async(address) => {
     const result = await WearTicket.find({'address': new RegExp(`^${address}$`, 'i')})
-    console.log(`DB listTicketsByAddress got ${result.length} tickets`)
+    console.log(`DB listTicketsByAddress got ${result.length} tickets for ${address}`)
     return result
 }
 
@@ -16,7 +16,7 @@ const wear = async(id, address, sourceImageLinks) => {
     if (ticket.status != 'NEW' && ticket.status != 'REJECTED') {
         throw new Error('Ticket already spent')
     }
-    if (ticket.address != address) {
+    if (ticket.address.toLowerCase() != address.toLowerCase()) {
         throw new Error('Not ticket owner')
     }
     if (!sourceImageLinks || !sourceImageLinks.length) {

@@ -5,10 +5,10 @@
   "description": "A template for kick starting a Cloudflare Workers project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write '**/*.{js,css,json,md}'",
     "dev": "wrangler dev",
     "login": "wrangler login",
+    "test": "wrangler publish --env test",
     "prom": "wrangler publish --env production"
   },
   "author": "Wes Bos <wesbos@gmail.com>",

@@ -120,7 +120,15 @@ app.post("/wardrobe/:id/wear", verifyToken(), async (req, res) => {
 
     const ticket = await getTicket(id)
     const products = await getAddressProducts(address)
-    const product = products.find(p => p.product._id === ticket.productId)
+    const allProducts = await getAllProducts()
+    let product = null
+    if (ticket.type === 'buy') {
+        product = products.map(p => p.product).find(p => p._id === ticket.productId)
+    } else {
+        product = allProducts.find(p => p._id === ticket.productId)
+    }
+
+    
     if (!product) {
         throw new Error(`Do not own a product with id ${ticket.productId}`)
     }
@@ -128,7 +136,7 @@ app.post("/wardrobe/:id/wear", verifyToken(), async (req, res) => {
     const result = await wear(id, address, sourceImageLinks)
     fireNotification('NEW_WEAR_REQUEST', {
         user_id: address,
-        item_name: product.product.name
+        item_name: product.name
     })
     res.status(200).json(result)
 })
