@@ -7,6 +7,7 @@ declare -a modules=(
     "nfts-stripe-adapter"    
     "nfts-warehouse"
     "nfts-notify"
+    hubspot-proxy
 )
 
 function build_docker() {
