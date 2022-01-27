@@ -77,5 +77,15 @@ services:
      - ./env/telegram.env
     expose:
       - "3005"
+  hubspot-proxy:
+    networks:
+      nfts:
+    image: rg.fr-par.scw.cloud/easychain/nfts/hubspot-proxy:${TAG}
+    container_name: hubspot-proxy
+    restart: always
+    env_file:
+     - ./env/auth.env
+    expose:
+      - "3003"
 networks:
   nfts:
