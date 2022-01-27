@@ -1,30 +1,29 @@
-const url = require('url');
-
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+
+const hubspot = require('@hubspot/api-client')
 
 const app = express();
 
+app.use(express.json());
+
+const jsonErrorHandler = async (err, req, res, next) => {
+  console.error(err)
+  if (JSON.stringify(err) === '{}') {
+    res.status(500).json({ error: err.message });
+  } else {
+    res.status(500).json({ error: err });
+  }
+}
+
 const API_KEY = '17c0097f-bd91-45f7-93fe-ab7595ec72d8';
+const hubspotClient = new hubspot.Client({ apiKey:  API_KEY })
 
-app.use(
-  '/hubspot',
-  createProxyMiddleware({
-    target: 'https://api.hubapi.com',
-    changeOrigin: true,
+app.get('/hubspot/blog/posts', async (req, res) => {
+  const blogResp = await hubspotClient.cms.blogs.blogPosts.blogPostApi.getPage();
 
-    onProxyReq(proxyReq, req, res,options) {
-      const parsed = url.parse(proxyReq.path, true);
+  return res.json(blogResp.body)
+})
 
-      parsed.query['hapikey'] = API_KEY
-
-      proxyReq.path = url.format({pathname: parsed.pathname, query: parsed.query}, {});
-    },
-
-    pathRewrite: {
-      '^/hubspot/': '/',
-    }
-  })
-);
+app.use(jsonErrorHandler);
 
 app.listen(3003);
