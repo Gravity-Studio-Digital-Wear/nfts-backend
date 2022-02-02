@@ -77,5 +77,5 @@ app.get('/hubspot/blog/tags', async (req, res) => {
 })
 
 app.use(jsonErrorHandler);
-
-app.listen(3003);
+console.log(`Application is runnig on 3013`)
+app.listen(3013);

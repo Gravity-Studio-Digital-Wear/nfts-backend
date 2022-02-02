@@ -85,7 +85,8 @@ services:
     restart: always
     env_file:
      - ./env/auth.env
+     - ./env/hubspot.env
     expose:
-      - "3003"
+      - "3013"
 networks:
   nfts:

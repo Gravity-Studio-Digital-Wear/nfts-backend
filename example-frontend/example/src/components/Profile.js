@@ -69,9 +69,7 @@ export default function Profile() {
           gasPrice
       });
       setReceipt2(receipt)
-
-
-  }
+}
 
   return userMetadata ? <div className="container">
     <h1>Current user: {userMetadata.email}</h1>
