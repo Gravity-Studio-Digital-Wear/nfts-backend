@@ -9,9 +9,16 @@ const productSchema = new mongoose.Schema({
     contractId: { type: String, required: true },
     tokenTypeId: { type: String, required: true },
     images: { type: [String], required: true },
-    active: { type: Boolean, default: true }
+    active: { type: Boolean, default: true },
+    models: [
+        {
+            metaverseId: String,
+            modelUrl: String
+        }
+    ]
 }, {
-    timestamps: true,    toJSON: {
+    timestamps: true,
+    toJSON: {
         virtuals: true
     }
 });
