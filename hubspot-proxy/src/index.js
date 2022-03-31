@@ -14,14 +14,14 @@ app.use(express.json());
 const jsonErrorHandler = async (err, req, res, next) => {
   console.error(err)
   if (JSON.stringify(err) === '{}') {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({error: err.message});
   } else {
-    res.status(500).json({ error: err });
+    res.status(500).json({error: err});
   }
 }
 
 const API_KEY = process.env.HUBSPOT_API_KEY;
-const hubspotClient = new hubspot.Client({ apiKey:  API_KEY })
+const hubspotClient = new hubspot.Client({apiKey: API_KEY})
 
 app.get('/hubspot/blog/posts', async (req, res) => {
   const qs = {}
@@ -74,6 +74,22 @@ app.get('/hubspot/blog/tags', async (req, res) => {
   const blogResp = await hubspotClient.cms.blogs.tags.tagApi.getPage();
 
   return res.json(blogResp.body)
+})
+
+app.post('/hubspot/contacts', async (req, res) => {
+  try {
+    const blogResp = await hubspotClient.crm.contacts.basicApi.create({
+      properties: {
+        "email": req.body.email,
+      }
+    })
+
+    return res.json(blogResp.body)
+  }catch (e) {
+    return res.status(400).json({
+      message: 'email is already exists',
+    })
+  }
 })
 
 app.use(jsonErrorHandler);
