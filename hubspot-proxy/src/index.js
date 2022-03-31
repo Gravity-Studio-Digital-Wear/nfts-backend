@@ -77,13 +77,19 @@ app.get('/hubspot/blog/tags', async (req, res) => {
 })
 
 app.post('/hubspot/contacts', async (req, res) => {
-  const blogResp = await hubspotClient.crm.contacts.basicApi.create({
-    properties: {
-      "email": req.body.email,
-    }
-  })
+  try {
+    const blogResp = await hubspotClient.crm.contacts.basicApi.create({
+      properties: {
+        "email": req.body.email,
+      }
+    })
 
-  return res.json(blogResp.body)
+    return res.json(blogResp.body)
+  }catch (e) {
+    return res.status(400).json({
+      message: 'email is already exists',
+    })
+  }
 })
 
 app.use(jsonErrorHandler);
