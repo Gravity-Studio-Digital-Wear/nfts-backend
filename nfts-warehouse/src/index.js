@@ -10,6 +10,8 @@ const { getTicket,
     provideRejection } = require('./db/ticketRepository')
 const { getStockSupply, getAddressSupply } = require('./alchemy/alchemy')
 const { fireNotification } = require('./notification/client')
+const Storage = require('./storage/index')
+
 
 const app = express();
 
@@ -163,6 +165,7 @@ app.post("/wardrobe/:id/result", verifyToken('ADMIN'), async (req, res) => {
     res.status(200).json(result)
 })
 
+app.use('/storage', Storage)
 app.use(jsonErrorHandler);
 
 const runStart = async() => {

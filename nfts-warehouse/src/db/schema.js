@@ -1,5 +1,15 @@
 const mongoose = require('mongoose');
 
+const productMetadataSchema = new mongoose.Schema({
+    metaverseId: {type: String, required: true},
+    previewImage: {type: String, required: true},
+    modelUrl: {type: String, required: true},
+    attributes: [{
+        name: String,
+        value: String
+    }]
+})
+
 const productSchema = new mongoose.Schema({
     _id: { type: String, required: true, unique: true },
     name: { type: String, required: true, unique: true, dropDups: true, default: '' },
@@ -9,7 +19,8 @@ const productSchema = new mongoose.Schema({
     contractId: { type: String, required: true },
     tokenTypeId: { type: String, required: true },
     images: { type: [String], required: true },
-    active: { type: Boolean, default: true }
+    active: { type: Boolean, default: true },
+    metadata: [productMetadataSchema]
 }, {
     timestamps: true,    toJSON: {
         virtuals: true
@@ -34,8 +45,10 @@ const wearTicketSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 const WearTicket = mongoose.model('WearTicket', wearTicketSchema);
+const ProductMetadata = mongoose.model('ProductMetadata', productMetadataSchema)
 
 module.exports = {
     Product,
-    WearTicket
+    WearTicket,
+    ProductMetadata
 }
