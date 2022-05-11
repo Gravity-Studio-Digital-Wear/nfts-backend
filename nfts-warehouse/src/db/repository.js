@@ -29,8 +29,14 @@ const updateProduct = async(id, product) => {
     return result
 }
 
-const getAllProducts = async() => {
-    const products = await Product.find()
+const getAllProducts = async(filter = {}) => {
+    const filterQuery = {};
+
+    if (filter.metaverseId) {
+        filterQuery['metadata.metaverseId'] = filter.metaverseId
+    }
+
+    const products = await Product.find(filterQuery)
     console.log(`DB getAllProducts found ${products.length} products`)
     return products
 }
