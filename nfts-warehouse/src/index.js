@@ -31,8 +31,8 @@ if (!process.env.TOKEN_KEY) {
     process.exit(0)
 }
 
-const getAddressProducts = async (address) => {
-    const products = await getAllProducts()
+const getAddressProducts = async (address, filter) => {
+    const products = await getAllProducts(filter)
     const productRequest = products.map(p => ({
         contractId: p.contractId,
         tokenTypeId: p.tokenTypeId
@@ -67,7 +67,14 @@ app.put("/warehouse/products/:id", verifyToken('ADMIN'), async (req, res) => {
 
 app.get("/warehouse/products/my", verifyToken(), async (req, res) => {
     const address = req.user.user_id
-    const result = await getAddressProducts(address)
+    const filter = {}
+
+    if (!!req.query.metaverseId) {
+        filter['metaverseId'] =  req.query.metaverseId;
+    }
+
+    const result = await getAddressProducts(address, filter)
+
     res.status(200).json(result)
 })
 
