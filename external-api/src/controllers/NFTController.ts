@@ -29,7 +29,7 @@ export class NFTController {
                 name,
                 contractId,
                 tokenTypeId,
-                variants: metadata.filter((t: any) => t.metaverseId === metaverseId)
+                metadata: metadata.filter((t: any) => t.metaverseId === metaverseId)
             }
         })
     }
@@ -80,7 +80,7 @@ export class NFTController {
                     name,
                     contractId,
                     tokenTypeId,
-                    variants: metadata.filter((t: any) => t.metaverseId === metaverseId)
+                    metadata: metadata.filter((t: any) => t.metaverseId === metaverseId)
                 }
             });
     }
