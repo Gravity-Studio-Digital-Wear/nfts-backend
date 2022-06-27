@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node ./build/index.js",
-    "start:watch": "npm run build:watch & nodemon ./build/index.js",
+    "start:watch": "nodemon",
     "build": "node_modules/.bin/tsc -p tsconfig.json",
     "build:watch": "ts-node src/index.ts -w",
     "server": "node build/index.js"

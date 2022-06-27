@@ -4,6 +4,7 @@ import { NFTController } from './controllers/NFTController';
 import { connect } from 'mongoose';
 import {MetaverseController} from "./controllers/MetaverseController";
 import { Container } from 'typedi';
+import {ADRRegistryController} from "./controllers/ADRRegistryController";
 
 useContainer(Container);
 
@@ -12,9 +13,12 @@ useContainer(Container);
     console.log(`Database connected`)
 
     const app = createExpressServer({
+        classTransformer: true,
+        validation: true,
         controllers: [
             NFTController,
-            MetaverseController
+            MetaverseController,
+            ADRRegistryController
         ],
     });
 
