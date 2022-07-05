@@ -31,7 +31,9 @@ jobs:
           projectBaseDir: ${{ matrix.service }}
           args: >
             -Dsonar.projectKey=${{ matrix.service }}
-            -Dsonar.projectName=${{ matrix.service }}            
+            -Dsonar.projectName=${{ matrix.service }}    
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.sourceEncoding=UTF-8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
