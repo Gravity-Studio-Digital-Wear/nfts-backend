@@ -1,3 +1,10 @@
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - 'feature/**'
 jobs:
   service_matrix:
     strategy:
