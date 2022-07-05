@@ -19,6 +19,8 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@master
         with:
           args: >
+            -Dsonar.projectKey=${{ github.repository }}
+            -Dsonar.projectName=${{ github.repository }}    
             -Dsonar.qualitygate.wait=true
             -Dsonar.sourceEncoding=UTF-8
         env:
@@ -62,6 +64,7 @@ jobs:
           image-ref: 'ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         if: always()
