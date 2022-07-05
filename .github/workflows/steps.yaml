@@ -19,8 +19,8 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@master
         with:
           args: >
-            -Dsonar.projectKey=${{ github.repository }}
-            -Dsonar.projectName=${{ github.repository }}    
+            -Dsonar.projectKey=${{ github.event.repository.name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}  
             -Dsonar.qualitygate.wait=true
             -Dsonar.sourceEncoding=UTF-8
         env:
