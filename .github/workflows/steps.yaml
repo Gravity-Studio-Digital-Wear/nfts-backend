@@ -41,6 +41,9 @@ jobs:
     needs: code-quality
     steps:
       - uses: actions/checkout@v2
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - uses: docker/metadata-action@v3
         id: metadata
         with:
@@ -55,14 +58,14 @@ jobs:
           push: true
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
-          tags: ${{ steps.metadata.outputs.tags }}
+          tags: ${{ steps.vars.outputs.sha_short }}
           labels: ${{ steps.metadata.outputs.labels }}
           cache: true
           cache-repository: ghcr.io/${{ github.repository }}/${{ matrix.service }}/cache
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}'
+          image-ref: 'ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}'
           format: 'sarif'
           output: 'trivy-results-${{ matrix.service }}.sarif'
 
