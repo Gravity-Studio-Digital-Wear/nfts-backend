@@ -53,19 +53,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: PrepareReg Names
+        run: |
+          echo IMAGE_REPOSITORY=$(echo ${{ env.IMAGE_REPOSITORY }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+          echo IMAGE_TAG=$(echo ${{ github.ref }} | tr '[:upper:]' '[:lower:]' | awk '{split($0,a,"/"); print a[3]}') >> $GITHUB_ENV
       - uses: int128/kaniko-action@v1
         with:
           push: true
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
-          tags: ${{ steps.metadata.outputs.image }}:${{ steps.vars.outputs.sha_short }}
+          tags: ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}
           labels: ${{ steps.metadata.outputs.labels }}
           cache: true
-          cache-repository: ghcr.io/${{ github.repository }}/${{ matrix.service }}/cache
+          cache-repository: ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}/cache
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ steps.metadata.outputs.image }}:${{ steps.vars.outputs.sha_short }}'
+          image-ref: 'ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}'
           format: 'sarif'
           output: 'trivy-results-${{ matrix.service }}.sarif'
 
