@@ -58,7 +58,7 @@ jobs:
           push: true
           file: ${{ matrix.service }}/Dockerfile
           context: ${{ matrix.service }}
-          tags: ${{ steps.vars.outputs.sha_short }}
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}:${{ steps.vars.outputs.sha_short }}
           labels: ${{ steps.metadata.outputs.labels }}
           cache: true
           cache-repository: ghcr.io/${{ github.repository }}/${{ matrix.service }}/cache
