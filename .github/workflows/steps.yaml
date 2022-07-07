@@ -72,6 +72,9 @@ jobs:
           image-ref: 'ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}'
           format: 'sarif'
           output: 'trivy-results-${{ matrix.service }}.sarif'
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
