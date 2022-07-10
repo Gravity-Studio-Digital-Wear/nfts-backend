@@ -92,7 +92,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Update Version
         run: |
-          apt install yq
+          sudo apt-get install -y 
           declare -A array
           array[nfts-auth.image.tag]=${{ steps.vars.outputs.sha_short }}
           array[nfts-polygon-adapter.image.tag]=${{ steps.vars.outputs.sha_short }}
