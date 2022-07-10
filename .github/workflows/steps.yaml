@@ -111,7 +111,7 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           # set new image tags in values file
           for key in "${!array[@]}"; do 
-            yq eval "."$key" = \"${array[$key]}\"" --inplace values-$ENVIRONMENT.yaml
+            yq eval "."$key" = \"${array[$key]}\"" --inplace charts/gravity/values-$ENVIRONMENT.yaml
           done
           # commit and push to helm repo
           git commit -am ${{ github.event.head_commit.message }} || true
