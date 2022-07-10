@@ -120,9 +120,9 @@ jobs:
         # CLI has already been downloaded in prior step, no call to GitHub API
         with:
           command: app sync gravity-{{ env.ENVIRONMENT }}
-          options: --server {{ secret.$ARGOCD_SERVER }} --auth-token {{ secret.$TOKEN }}
+          options: --server {{ secret.ARGOCD_SERVER }} --auth-token {{ secret.TOKEN }}
       - uses: clowdhaus/argo-cd-action/@main
         # CLI has already been downloaded in prior step, no call to GitHub API
         with:
           command: app wait gravity-{{ env.ENVIRONMENT }}
-          options: --server {{ secret.$ARGOCD_SERVER }} --auth-token {{ secret.$TOKEN }} --health --timeout 180
+          options: --server {{ secret.ARGOCD_SERVER }} --auth-token {{ secret.TOKEN }} --health --timeout 180
