@@ -117,20 +117,12 @@ jobs:
           git commit -am ${{ github.event.head_commit.message }} || true
           git pull --rebase && git push origin master     
       - uses: clowdhaus/argo-cd-action/@main
-        env:
-          # Only required for first step in job where API is called
-          # All subsequent setps in a job will not re-download the CLI
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          command: version
-          options: --client
-      - uses: clowdhaus/argo-cd-action/@main
         # CLI has already been downloaded in prior step, no call to GitHub API
         with:
           command: app sync gravity-$ENVIRONMENT 
-          options: --server argocd.gravitylayer.io
+          options: --server $ARGOCD_SERVER --auth-token $ARGOCD_TOKEN
       - uses: clowdhaus/argo-cd-action/@main
         # CLI has already been downloaded in prior step, no call to GitHub API
         with:
           command: app wait gravity-$ENVIRONMENT
-          options: --health --timeout 180
+          options: --server $ARGOCD_SERVER --auth-token $ARGOCD_TOKEN --health --timeout 180
