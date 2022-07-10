@@ -110,7 +110,9 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           # set new image tags in values file
-          for key in "${!array[@]}"; do yq w -i --style=double charts/gravity/values-$ENVIRONMENT.yaml ${key} ${array[$key]} done
+          for key in "${!array[@]}"; do 
+            yq w -i --style=double charts/gravity/values-$ENVIRONMENT.yaml ${key} ${array[$key]} 
+          done
           # commit and push to helm repo
           git commit -am ${{ github.event.head_commit.message }} || true
           git pull --rebase && git push origin master     
