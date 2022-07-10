@@ -95,6 +95,7 @@ jobs:
         with:
           repository: Gravity-Studio-Digital-Wear/helm-charts
           ref: master
+          ssh-key: ${{ secrets.SSH_KEY }}
       - name: Update Version
         run: |
           sudo apt-get install -y 
