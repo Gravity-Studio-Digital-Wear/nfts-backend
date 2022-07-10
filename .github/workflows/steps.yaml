@@ -1,0 +1,132 @@
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - 'feature/**'
+  pull_request:
+      types: [opened, synchronize, reopened]
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Disabling shallow clone is recommended for improving relevancy of reporting
+          fetch-depth: 0
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.event.repository.name }}
+            -Dsonar.projectName=${{ github.event.repository.name }}  
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.sourceEncoding=UTF-8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  build:
+    strategy:
+      matrix:
+        service:
+          - external-api
+          - nfts-auth
+          - nfts-polygon-adapter
+          - nfts-stripe-adapter    
+          - nfts-warehouse
+          - nfts-notify
+          - hubspot-proxy
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get short hash commit
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - uses: docker/metadata-action@v3
+        id: metadata
+        with:
+          images: ghcr.io/${{ github.repository }}/${{ matrix.service }}
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: PrepareReg Names
+        run: |
+          echo IMAGE_REPOSITORY=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+          echo IMAGE_TAG=$(echo ${{ github.ref }} | tr '[:upper:]' '[:lower:]' | awk '{split($0,a,"/"); print a[3]}') >> $GITHUB_ENV
+      - uses: int128/kaniko-action@v1
+        with:
+          push: true
+          file: ${{ matrix.service }}/Dockerfile
+          context: ${{ matrix.service }}
+          tags: ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache: true
+          cache-repository: ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}/cache
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ env.IMAGE_REPOSITORY }}/${{ matrix.service }}:${{ steps.vars.outputs.sha_short }}'
+          format: 'sarif'
+          output: 'trivy-results-${{ matrix.service }}.sarif'
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results-${{ matrix.service }}.sarif'
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build 
+    if: (github.ref_name == 'main') || (github.ref_name == 'master') || (github.ref_name == 'dev')
+    env: 
+      ENVIRONMENT: dev
+    steps:
+      - name: Configuration for master branch
+        if: (github.ref_name == 'main') || (github.ref_name == 'master')
+        run: |
+          echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+      - uses: actions/checkout@v3
+      - name: Get short hash commit
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - uses: actions/checkout@v3 
+        with:
+          repository: Gravity-Studio-Digital-Wear/helm-charts
+          ref: master
+          ssh-key: ${{ secrets.SSH_KEY }}
+      - name: Update Version
+        run: |
+          sudo apt-get install -y 
+          declare -A array
+          array[nfts-auth.image.tag]=${{ steps.vars.outputs.sha_short }}
+          array[nfts-polygon-adapter.image.tag]=${{ steps.vars.outputs.sha_short }}
+          array[nfts-stripe-adapter.image.tag]=${{ steps.vars.outputs.sha_short }}
+          array[nfts-warehouse.image.tag]=${{ steps.vars.outputs.sha_short }}
+          array[nfts-notify.image.tag]=${{ steps.vars.outputs.sha_short }}
+          array[hubspot-proxy.image.tag]=${{ steps.vars.outputs.sha_short }}
+          # git config and clone helm repo 
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          # set new image tags in values file
+          for key in "${!array[@]}"; do 
+            yq eval "."$key" = \"${array[$key]}\"" --inplace charts/gravity/values-$ENVIRONMENT.yaml
+          done
+          # commit and push to helm repo
+          git commit -am ${{ github.event.head_commit.message }} || true
+          git pull --rebase && git push origin master     
+      - uses: clowdhaus/argo-cd-action/@main
+        # CLI has already been downloaded in prior step, no call to GitHub API
+        with:
+          command: app sync gravity-${{ env.ENVIRONMENT }}
+          options: --server ${{ secrets.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }}
+      - uses: clowdhaus/argo-cd-action/@main
+        # CLI has already been downloaded in prior step, no call to GitHub API
+        with:
+          command: app wait gravity-${{ env.ENVIRONMENT }}
+          options: --server ${{ secrets.ARGOCD_SERVER }} --auth-token ${{ secrets.ARGOCD_TOKEN }} --health --timeout 180
