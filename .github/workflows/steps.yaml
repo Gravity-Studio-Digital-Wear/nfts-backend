@@ -87,6 +87,7 @@ jobs:
     env: 
       ENVIRONMENT: dev
     steps:
+      - uses: actions/checkout@v2
       - name: Get short hash commit
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
