@@ -128,7 +128,9 @@ jobs:
         # CLI has already been downloaded in prior step, no call to GitHub API
         with:
           command: app sync gravity-$ENVIRONMENT 
+          options: --server argocd.gravitylayer.io
       - uses: clowdhaus/argo-cd-action/@main
         # CLI has already been downloaded in prior step, no call to GitHub API
         with:
-          command: app wait gravity-$ENVIRONMENT --health --timeout 180
+          command: app wait gravity-$ENVIRONMENT
+          options: --health --timeout 180
