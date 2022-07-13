@@ -9,7 +9,7 @@ import {ADRRegistryController} from "./controllers/ADRRegistryController";
 useContainer(Container);
 
 (async function (){
-    await connect(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:27017/${process.env.MONGO_DB}`)
+    await connect(`${process.env.MONGO_URL}`)
     console.log(`Database connected`)
 
     const app = createExpressServer({
