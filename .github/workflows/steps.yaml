@@ -110,6 +110,7 @@ jobs:
           array[nfts-warehouse.image.tag]=${{ steps.vars.outputs.sha_short }}
           array[nfts-notify.image.tag]=${{ steps.vars.outputs.sha_short }}
           array[hubspot-proxy.image.tag]=${{ steps.vars.outputs.sha_short }}
+          array[external-api.image.tag]=${{ steps.vars.outputs.sha_short }}
           # git config and clone helm repo 
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
