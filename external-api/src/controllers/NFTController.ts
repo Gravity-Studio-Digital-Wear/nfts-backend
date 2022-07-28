@@ -47,6 +47,7 @@ export class NFTController {
             },
         ]).exec();
 
+
         const productsTokenTypesMap = products.reduce((acc, {contractId, tokenTypeId}) => {
             const contract = contractId.toLowerCase();
 
@@ -71,8 +72,8 @@ export class NFTController {
 
         return products
             .filter(p => {
-                return ownedProducts[p.contractId]
-                    && ownedProducts[p.contractId].includes(p.tokenTypeId)
+                return ownedProducts[p.contractId.toLowerCase()]
+                    && ownedProducts[p.contractId.toLowerCase()].includes(p.tokenTypeId)
             })
             .map((product) => {
                 const {name, contractId, tokenTypeId, metadata} = product
